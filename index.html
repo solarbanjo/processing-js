@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<head>
+
+<meta http-equiv="content-type" content="text/html;
+charset=ISO-8859-1"> 
+<script src="processing-1.4.1-arduino.js"></script>
+<script type="text/javascript">
+var INPUT = 0;
+var OUTPUT = 1;
+var HIGH = 1;
+var LOW = 0;
+var delayVal = 0;
+var serialBuffer = "";
+var A0 = 'A0';
+var A1 = 'A1';
+var A2 = 'A2';
+var A3 = 'A3';
+var A4 = 'A4'
+var A5 = 'A5'
+
+var timer_is_on=0;
+
+function timedCount() {
+	delayVal = 0;
+	var processingInstance = Processing.getInstanceById('sketch');
+	processingInstance.loop();
+	t=setTimeout("timedCount()",delayVal);
+}
+
+function doTimer() {
+	document.getElementById('serialOut').value = "";
+	if (!timer_is_on)
+	  {
+	  timer_is_on=1;
+	  timedCount();
+	  }
+}
+
+function stopCount()
+{
+clearTimeout(t);
+timer_is_on=0;
+}
+
+function loadCode() {
+	var codeSource = document.getElementById("codeSource").value;
+	var mySketch = document.getElementById("sketch");
+	var a = Processing.compile(codeSource);
+	var p = new Processing(mySketch,codeSource);
+}
+
+function jsPinMode(pin, mode){
+	var pinId = 'pin' + pin;
+	if(mode == 1) {	//indicating input
+		document.getElementById(pinId).type = 'radio';
+		document.getElementById(pinId).disabled = true;
+	} else {
+		document.getElementById(pinId).type = 'checkbox';
+		document.getElementById(pinId).disabled = false;
+	}
+}
+
+function jsDigitalRead(pin){
+	var pinId = 'pin' + pin;
+	var x = document.getElementById(pinId);
+	if(x.checked) {
+		return HIGH;
+	} else {
+		return LOW;
+	}
+}
+
+function jsDigitalWrite(pin,value){
+	var pinId = 'pin' + pin;
+	var x = document.getElementById(pinId);
+	if(value>0) {
+		x.checked = true;
+	} else {
+		x.checked = false;
+	}
+}
+
+function jsAnalogRead(pin){
+	var pinId = 'pinA' + pin;
+	if(pin.charAt(0) == 'A') {
+		pinId = 'pin' + pin
+	}
+	var x = document.getElementById(pinId);
+	x.type = 'text';
+	var xVal = Number(x.value);
+	if (xVal >= 0 && xVal <= 1023) {
+		return xVal;
+	} else {
+		return 0;
+	}
+	
+}
+
+function jsAnalogWrite(pin,value) {
+	var pinId = 'pin' + pin;
+	var x = document.getElementById(pinId);
+	x.type = 'text';
+	x.value = value;
+}
+
+function jsSerialBegin(speed) {
+	var x = document.getElementById('serialIn').disabled = false;
+}
+
+function jsSerialPrint(data,encoding) {
+	document.getElementById('serialOut').value = data;
+}
+
+function jsSerialPrintln(data,encoding) {
+	var currentValue = document.getElementById('serialOut').value
+	var newValue = data + "\r\n" + currentValue;
+	document.getElementById('serialOut').value = newValue;
+}
+
+function jsSerialAvailable() {
+	var x = document.getElementById('serialIn').value.length;
+	return(x);
+}
+
+function jsSerialRead() {
+	var x = document.getElementById('serialIn')
+	var nextByte = x.value.substring(0,1).charCodeAt(0);
+	var updatedSerialBuffer = x.value.substring(1);
+	x.value = updatedSerialBuffer;
+	return nextByte;
+}
+
+function jsSerialFlush() {
+	document.getElementById('serialIn').value = "";
+}
+
+</script>
+<title>Arduino Hardware Simulator</title>
+</head>
+<body>
+<canvas id="sketch" height='1' width='1'></canvas>
+     <button onclick="doTimer();">Start</button>
+     <button onclick="stopCount();">Stop</button>
+	 <button onclick="loadCode();">Load</button>
+<table style="text-align: left; width: 100%;" border="0" cellpadding="2"
+cellspacing="2">
+<tbody>
+	<tr>
+		<td>13</td>
+		<td><input id="pin13" type="checkbox" disabled=true></td>
+		<td>11</td>
+		<td><input id="pin11" size="4" type="text" disabled=true></td>
+		<td>A0</td>
+		<td><input id="pinA0" size="4" type="text" value='0'></td>
+	</tr>
+	<tr>
+		<td>12</td>
+		<td><input id="pin12" type="checkbox" disabled=true></td>
+		<td>10</td>
+		<td><input id="pin10" size="4" type="text" disabled=true></td>
+		<td>A1</td>
+		<td><input id="pinA1" size="4" type="text" value='0'></td>
+	</tr>
+	<tr>
+		<td>8</td>
+		<td><input id="pin8" type="checkbox" disabled=true></td>
+		<td>9</td>
+		<td><input id="pin9" size="4" type="text" disabled=true></td>
+		<td>A2</td>
+		<td><input id="pinA2" size="4" type="text" value='0'></td>
+	</tr>
+	<tr>
+		<td>7</td>
+		<td><input id="pin7" type="checkbox" disabled=true></td>
+		<td>6</td>
+		<td><input id="pin6" size="4" type="text" disabled=true></td>
+		<td>A3</td>
+		<td><input id="pinA3" size="4" type="text" value='0'></td>
+	</tr>
+	<tr>
+		<td>4</td>
+		<td><input id="pin4" type="checkbox" disabled=true></td>
+		<td>5</td>
+		<td><input id="pin5" size="4" type="text" disabled=true></td>
+		<td>A4</td>
+		<td><input id="pinA4" size="4" type="text" value='0'></td>
+	</tr>
+	<tr>
+		<td>2</td>
+		<td><input id="pin2" type="checkbox" disabled=true></td>
+		<td>3</td>
+		<td><input id="pin3" size="4" type="text" disabled=true></td>
+		<td>A5</td>
+		<td><input id="pinA5" size="4" type="text" value='0'></td>
+	</tr>
+	<tr>
+		<td>1</td>
+		<td><input id="pin1" type="checkbox" disabled=true></td>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>0</td>
+		<td><input id="pin0" type="checkbox" disabled=true></td>
+		<td></td>
+		<td></td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>Serial In</td>
+		<td colspan="5"><input id="serialIn" size="50" type="text" disabled=true></td>
+	</tr>
+	<tr>
+		<td>Serial Out</td>
+		<td colspan="5"><textarea id="serialOut" rows="5" cols="40" disabled=true></textarea></td>
+	</tr>
+</tbody>
+</table>
+<textarea id="codeSource"></textarea>
+</body>
+<script type="text/javascript">
+</script>
+</html>
